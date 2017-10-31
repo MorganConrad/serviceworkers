@@ -1,22 +1,18 @@
 
-const CACHE_NAME = "V1";
-const CACHE_FAILURES = CACHE_NAME + "_FAILS";
-const MY_NAME = "SW_04_" + CACHE_NAME;
+const EXERCISE_NAME = "SW_05";
+const FOLDER_NAME = "";
+const MY_NAME = EXERCISE_NAME + FOLDER_NAME;
+const VERSION = "_V1";
+const CACHE_NAME = MY_NAME + VERSION;
+const CACHE_FAILURES = MY_NAME + "_FAILS" + VERSION;
 const failmessage = "Network is off, will retry";
-
-/** Global variables and code are very unusual, test */
-var someGlobal = " MY_NAME" + CACHE_NAME;
-
-//console.log('Entering serviceworker ' + someGlobal);
-/* end of global test area */
 
 
 const INITIAL_CACHE = [];  // the caching is annoying here...
 
 
 self.addEventListener('install', function(event) {
-   someGlobal = someGlobal + " install";
-   console.log(MY_NAME + ': install event' + someGlobal);
+   console.log(MY_NAME + ': install event');
    event.waitUntil(caches.open(CACHE_NAME)
                     .then(function(cache) {
                         return cache.addAll(INITIAL_CACHE);
@@ -28,13 +24,12 @@ self.addEventListener('install', function(event) {
 
 
 self.addEventListener('activate', function(event) {
-   someGlobal = someGlobal + " & activate";
-   console.log(MY_NAME + ': activate event' + someGlobal);
+   console.log(MY_NAME + ': activate event');
    event.waitUntil(
       caches.keys().then(function(cacheNames) {
          return Promise.all(
             cacheNames.map(function(cacheName) {
-               if (!cacheName.startsWith(CACHE_NAME)) {
+               if (!cacheName.endsWith(VERSION)) {
                   return caches.delete(cacheName);
                }
             })
@@ -44,72 +39,84 @@ self.addEventListener('activate', function(event) {
 });
 
 
-
-// first, attach a "do nothing" handler
-// try moving this after the real one
 self.addEventListener('fetch', function doNothing(event) {
-   console.log('doNothing() fetch listener called for ' + event.request.url);
-   event.request.foo = 'bar';
+   console.log(MY_NAME + ': doNothing() fetch listener called for ' + event.request.url);
    return;  // we aren't handling it
 });
 
 
 self.addEventListener('fetch', function postHander(event) {
    if (event.request.method === 'POST') {
-      console.log('postHander() fetch listener called for ' + event.request.url);
-      var fake;
+      console.log(MY_NAME + ': postHander() fetch listener called for ' + event.request.url);
+      var copyOfRequest = event.request.clone();
       event.respondWith(
-         fakeRequest(event.request)
-         .then(function(x) {
-            fake = x.fake;
-            fake.clientId = event.clientId;
-            return fetch(x.original)
-         })
+         fetch(event.request)
          .then (function(response) {
             if (!response.ok)
-               return saveFailedRequest(fake, "fail: " + response.status, response);
+               return saveFailedRequest(copyOfRequest, "fail: " + response.status, response, event.clientId);
             else
                return response;
          })
          .catch(function(err) {
-             return saveFailedRequest(fake, "Network is off, will retry");
+             return saveFailedRequest(copyOfRequest, "Network is off, will retry");
          })
       );
    }
 });
 
 
-function saveFailedRequest(fakedRequest, fillinMessage, originalResponse) {
+function saveFailedRequest(failedRequest, fillinMessage, originalResponse, clientId) {
    console.log('saveFailedRequest(): ' + fillinMessage);
    var tempResponse = new Response(fillinMessage);
-   originalResponse = originalResponse || tempResponse;;
-   return caches.open(CACHE_FAILURES)
+   originalResponse = originalResponse || tempResponse;
+   var fakedRequest;
+   return fakeGETRequest(failedRequest)
+      .then(function(faked) {
+         fakedRequest = faked;
+         fakedRequest.clientId = clientId;
+         return caches.open(CACHE_FAILURES);
+      })
       .then(function(cache) {
          cache.put(fakedRequest, originalResponse);
          return tempResponse;
       });
 }
 
-self.addEventListener('sync', function(event) {
-   event.waitUntil(
-      caches.open(CACHE_FAILURES)
-       .then(cache => {return cache.keys()})
-       .then(function(failedRequests) {
-          return requests.map(function(failedRequest) {
-             var realRequest = fakeRequest(failedRequest);
-             return fetch(realRequest)
-                    .then(function(response) {
-                       clients.
-                    });
-          })
 
+self.addEventListener('sync', function(event) {
+   console.log(MY_NAME + " sync event called " + event);
+   event.waitUntil(
+      var theCache;
+      caches.open(CACHE_FAILURES)
+      .then(cache => {
+         theCache = cache;
+         return cache.keys();
+      })
+      .then(function(failedRequests) {
+         console.dir(failedRequests);
+         return failedRequests.map(function(failedRequest) {
+            theCache.delete(failedRequest)
+            .then(function() {
+               var originalRequest = restoreFakedRequest(failedRequest);
+               // in a real app would do something here
+               console.log("would be notifying " + originalRequest.clientId);
+            })
+          })
        })
-       .then()
-   )
+    );
+   //           return fetch(realRequest)
+   //                  .then(function(response) {
+   //                     clients.
+   //                  });
+   //        })
+   //
+   //     })
+   //     .then()
+   // )
 })
 
 
-funcion retry(request) {
+function retry(request) {
    var unFake = fakeRequest(request);
 
 }
@@ -143,15 +150,25 @@ self.addEventListener('xxxsync', event => {
 });
 
 
-function fakeRequest(request, newMethod) {
-   var original = request;
-   request = request.clone(); // save body
+/**
+ * You can't cache a Request that has a body or isn't a GET
+ * This creates a "GET" request that preserves the info
+ * This reads from and "uses up" the incoming request
+ *
+ * @param  Request      request destroyed by ths fucntion
+ * @param  String       method  only used from restoreFakedRequest
+ * @param  arrayBuffer  body    only used from restoreFakedRequest
+ * @return Promise      for a Request
+ */
+function fakeGETRequest(request, method, body) {
    return request.arrayBuffer()
      .then(function(bodyArrayBuffer) {
         var init = {
-           method: request.realMethod || newMethod || 'GET',
-           body: request.realBody,
+           // these two may get "toggled" to refer to a previous version
+           method: method || 'GET',
+           body: body,
 
+           // these are preserved
            headers: request.headers,
            mode: request.mode,
            credentials: request.credentials,
@@ -160,11 +177,19 @@ function fakeRequest(request, newMethod) {
            referrer: request.referrer,
            integrity: request.integrity,
         }
-        var fake = new Request(request.url, init);
-        fake.realMethod = request.method;
-        fake.realBody = bodyArrayBuffer;
-        return { original, fake }
+        var faked = new Request(request.url, init);
+
+        faked.methodWas = request.method;  // preserve these for next time through
+        faked.bodyWas = bodyArrayBuffer;
+        faked.clientId = request.clientId;
+
+        return faked;
      });
+}
+
+// could be named "toggle" but thought this was clearer
+function restoreFakedRequest(request) {
+   return fakeGETRequest(request, request.methodWas, request.bodyWas);
 }
 
 function updateCache(request, response) {
