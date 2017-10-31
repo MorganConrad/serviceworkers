@@ -1,0 +1,29 @@
+<!doctype html>
+<html lang="en">
+<head>
+<script src="registerSW.js"></script>
+<script src="formstuff.js"></script>
+</head>
+
+<body onload="registerServiceWorker('/SW_04.js')">
+
+  <main>
+    <h1>04 Sync Test</h1>
+
+   <form name="submit" id="submit" action="http://www.flyingspaniel.com/echo.php" style= "padding: 3px; background-color: #EEEEEE;" method="post">
+         <label for="name">Name</label><input type="text" id="name" name="name" title="name" value="John Doe" required><br>
+         <label for="date">Date</label><input type="date" id="date" name="date" pattern="\d\d/\d\d/20\d\d" placeholder="mm/dd/20yy" title="mm/dd/20yy" required><br>
+         <label for="status_code">Status</label><input type="text" id="status_code" name="status_code" value="200" placeholder="200" title="200" required><br>
+         <button type="submit" formtarget="_blank">Form Submit</button><br>
+   </form>
+
+   <button type="submit" onclick="doFetch('http://www.flyingspaniel.com/echo.php', 'POST', 'submit', 'responseTA')">Fetch Submit</button>
+<br><br>
+<h4>Response:</h4>
+   <textarea rows="6" cols="50" id="responseTA"></textarea>
+  </main>
+
+  <footer>
+  </footer>
+</body>
+</html>
