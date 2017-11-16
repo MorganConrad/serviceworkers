@@ -1,5 +1,5 @@
 const EXERCISE_NAME = "SW_01";
-const FOLDER_NAME = "_folderB";
+const FOLDER_NAME = "_blog";
 const MY_NAME = EXERCISE_NAME + FOLDER_NAME;
 const VERSION = "_V1";
 const CACHE_NAME = MY_NAME + VERSION;
@@ -10,7 +10,7 @@ var someGlobal = "";
 /* end of global test area */
 
 
-const INITIAL_CACHE = ['indexB.html'];
+const INITIAL_CACHE = ['PLayTheAcceleratedDragon.html'];
 
 
 

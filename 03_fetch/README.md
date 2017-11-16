@@ -13,13 +13,13 @@ Fast, best for content that doesn't change.
 
  1. Check for content already in cache.  If present, return it, **done**
  2. Fetch response from network
- 3. Add cloned response to cache.  (there are cases where you don't want to do this)
+ 3. Add cloned response to cache.  (there are cases where you don't want to cache)
  4. Return response.
  
 **Downsides** Though **new** content will get added in steps 2-4, existing content is never updated.
  If it becomes necessary to update content:
   - Could update the Service Worker and "V" number on cache to delete old content.
-  - There is an altenative strategy to check cache first, but then **always** perform steps 2-4 anyway.
+  - There is an alternative strategy to check cache first, but then **always** perform steps 2-4 anyway.
   
 ### networkFirstThenCache()
 
@@ -36,5 +36,3 @@ Content will always be "fresh".  Easy to update.
 
  - `shouldCacheThis()` : not all content should be cached
  - `shouldHandleFetch()` : some content should just use the default fetch.
-
- 

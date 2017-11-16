@@ -11,11 +11,11 @@ Line 59 we add the realHandler().  It just fetches from the network.
 In the console, you will see that doNothing() got called, followed by the real handler.
 
 <pre>
-SW_02: doNothing() fetch listener called for http://127.0.0.1:8080/folderA/indexA.html
-SW_02: realHandler() fetch listener called for http://127.0.0.1:8080/folderA/indexA.html
+SW_02: doNothing() fetch listener called for http://127.0.0.1:8080/...
+SW_02: realHandler() fetch listener called for http://127.0.0.1:8080/...
 </pre>
 
-Edit SW_02.js by cut/paste the code so that realHandler() is added first.  
-Since it does event.respondWith(), doNothing() never gets called.
+Edit SW_02.js by cut/paste the code so that `realHandler()` is added first.  
+Since `realHandler()` does response to `event.respondWith()`, `doNothing()` never gets called.
 
-If only doNothing() is added, the event falls through to the system default handler, which is fetch(event.request).
+If only `doNothing()` is added, the event falls through to the system default handler, which is `fetch(event.request)`.

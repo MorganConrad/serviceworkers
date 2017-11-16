@@ -14,8 +14,8 @@ const INITIAL_CACHE = [
    "/index.html",
    "/help.html",   // deliberately leave out more.html
    "/",
-   "/folderA/indexA.html",  // these wont matter cause subfolder SWs will handle them
-   "/folderB/indexB.html"
+   "/blog/PlayTheAcceleratedDragon.html",  // these wont matter cause subfolder SWs will handle them
+   "/users/HouYifan.html"
 ];
 
 
@@ -55,4 +55,3 @@ self.addEventListener('fetch', function(event) {
    console.log(MY_NAME + ': fetch event ' + event.request.url);
    return;  // just return
 });
-

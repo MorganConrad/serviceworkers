@@ -1,5 +1,5 @@
 const EXERCISE_NAME = "SW_01";
-const FOLDER_NAME = "_folderA";
+const FOLDER_NAME = "_users";
 const MY_NAME = EXERCISE_NAME + FOLDER_NAME;
 const VERSION = "_V1";
 const CACHE_NAME = MY_NAME + VERSION;
@@ -10,15 +10,16 @@ var someGlobal = "";
 /* end of global test area */
 
 
-const INITIAL_CACHE = ['indexA.html'];
+const INITIAL_CACHE = ['HouYifan.html', 'MagnusCarlsen.html'];
 
 
 
 self.addEventListener('install', function(event) {
    someGlobal = someGlobal + " install";
    console.log(MY_NAME + ': install event' + someGlobal);
-   event.waitUntil(caches.open(CACHE_NAME)
-                    .then(function(cache) {
+   event.waitUntil(
+      caches.open(CACHE_NAME)
+        .then(function(cache) {
                         return cache.addAll(INITIAL_CACHE);
                      })
                      .catch(err => console.log('install failed: ' + err))

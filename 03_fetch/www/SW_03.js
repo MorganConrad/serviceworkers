@@ -12,7 +12,8 @@ const INITIAL_CACHE = [
    "/index.html",
    "/help.html",   // deliberately leave out more.html
    "/",
-   "/folderA/indexA.html"  // and folderB
+    "/blog/PlayTheAcceleratedDragon.html",
+   "/users/HouYifan.html"
 ];
 
 
@@ -49,7 +50,7 @@ self.addEventListener('activate', function(event) {
 
 
 self.addEventListener('fetch', function(event) {
-   if (shouldHandleFetch(event)) {   
+   if (shouldHandleFetch(event)) {
       event.respondWith(cacheFirstThenNetwork(event, true));
       //event.respondWith(networkFirstThenCache(event, true));
    }
@@ -82,7 +83,7 @@ function cacheFirstThenNetwork(event, andUpdateCache) {
 function networkFirstThenCache(event, andUpdateCache) {
    return fetch(event.request)
       .then (function(response) {
-         // really should check for 404??? 
+         // really should check for 404???
          console.log(MY_NAME + ': fetch event ' + event.request.url + ' from network');
          if (andUpdateCache)
             updateCache(event.request, response.clone());
@@ -114,23 +115,23 @@ function updateCache(request, response) {
 
 // this can get messy and varies by your application
 function shouldCacheThis(request, response) {
-   return (request.method === 'GET') &&
-   response.ok)                          // only status 200-299   Some online example code also checks for null
-   (response.type === 'basic')           // don't cache other sites (cors)
-   
-   /* other types of things you might want to check
-   (response.headers.get('Content-Type') === 'whatever')
-   response.url.endsWith('.html)
-   !response.redirected;
-   location.origin === response.url.origin   // another way to check cross site stuff...
-   */
+  return (request.method === 'GET') &&
+    response.ok &&                        // only status 200-299   Some online example code also checks for null
+    (response.type === 'basic')           // don't cache other sites (cors)
+
+  /* other types of things you might want to check
+  (response.headers.get('Content-Type') === 'whatever')
+  response.url.endsWith('.html)
+  !response.redirected;
+  location.origin === response.url.origin   // another way to check cross site stuff...
+  */
 }
 
 
 // this can also get messy and varies by your application
 function shouldHandleFetch(event) {
    return (event.request.method === 'GET');
-   
+
    /* more possibilities
       new URL(event.request.url).origin === self.location.origin
       request.mode === 'origin'

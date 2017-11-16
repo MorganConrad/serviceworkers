@@ -12,8 +12,8 @@ const INITIAL_CACHE = [
    "/index.html",
    "/help.html",
    "/",
-   "/folderA/indexA.html",
-   "/folderB/indexB.html"
+   "/blog/PlayTheAcceleratedDragon.html",
+   "/users/HouYifan.html"
 ];
 
 

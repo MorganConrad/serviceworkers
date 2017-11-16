@@ -15,7 +15,7 @@
     - subdomains make a mess
  - A Service Worker usually has "scope" over the base location _of the script_.  So you usually place one in the top level.
     - only one Service Worker per folder
-    - but may have separate ones for subfolders.  see 03_multipleListeners     
+    - but may have separate ones for subfolders.  see 01_multipleSWs     
  
 
 ### Lifecycle
@@ -43,6 +43,7 @@ across activations, but can use indexedDB to preserve state.
  - the [response](https://developer.mozilla.org/en-US/docs/Web/API/Response) might have a status !== 200, check it!
  - checking the details and headers of the [Request is possible if tedious](https://developer.mozilla.org/en-US/docs/Web/API/Request).
  - [setting the cache mode](https://developer.mozilla.org/en-US/docs/Web/API/WindowOrWorkerGlobalScope/fetch) to avoid browser caching isn't implemented yet on Chrome.
+ - you can add multiple fetch listeners, for example, to handle different MIME types.
  
 ### References
 
@@ -59,7 +60,4 @@ across activations, but can use indexedDB to preserve state.
  - [awesome-progressive-web-apps](https://github.com/TalAter/awesome-progressive-web-apps)
  - [Taking the web offline with service workers](https://mobiforge.com/design-development/taking-web-offline-service-workers)
  - [Introduction to Progressive Web Apps (part 3)](https://auth0.com/blog/introduction-to-progressive-web-apps-push-notifications-part-3/)
- 
- 
- 
  
