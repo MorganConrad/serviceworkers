@@ -14,8 +14,9 @@ If not, a simple node.js based server that I use a lot for testing is [http-serv
 To run, use the provided serve.bat or serve.sh scripts, or, from the command line, `http-server [path] [options]`
 
 Alternatively, you can browse these pages on github pages.  Though you won't be able to change the code.
+The URL will be https://morganconrad.github.io/serviceworkers/{exercise folder}/www/index.html
 
-## 01: Hook up multiple service workers.  
+## 01_multipleSWs: Hook up multiple service workers.  
 
 This shows how you can setup separate service workers per folder.  It installs one service worker for
  - index.html
@@ -29,10 +30,10 @@ Because two different workers try to control the root directory, they swap back 
 
 In all the other exercises, only a single service worker gets registered, at the root level.
 
-[Try It Yourself](http://morganconrad.github.io/serviceworkers/01_multipleSWs/index.html)
+[Try It Yourself](http://morganconrad.github.io/serviceworkers/01_multipleSWs/www/index.html)
 
 
-## 02: Attach multiple listeners to the fetch event
+## 02_multipleListeners: Attach multiple listeners to the fetch event
 
 One listener, named `doNothing()`, just logs.  Since it doesn't call `event.respondTo()`, processing continues.
 
@@ -40,24 +41,24 @@ The second listener, `realHandler()`, responds by calling the normal fetch metho
 
 Try swapping the order, putting `realHandler` first, and see if `doNothing` still gets called.
 
-[Try It Yourself](http://morganconrad.github.io/serviceworkers/02_multipleListeners/index.html)
+[Try It Yourself](http://morganconrad.github.io/serviceworkers/02_multipleListeners/www/index.html)
 
 
 
-## 03: A vaguely realistic fetch listener
+## 03_fetch: A vaguely realistic fetch listener
 
 This example responds with either cached results (`cacheFirstThenNetwork()`), or responses from the network (`networkFirstThenCache()`).
 Edit the code and see what happens.  Note that more.html is deliberately left out of the initial cache, so it will always require one network call.
 
-[Try It Yourself](http://morganconrad.github.io/serviceworkers/03_fetch/index.html)
+[Try It Yourself](http://morganconrad.github.io/serviceworkers/03_fetch/www/index.html)
 
 
 
-## 04: More fun stuff to do with Fetch - Templating
+## 04_templating: More fun stuff to do with Fetch - Templating
 
 Illustrates how you could modify the response.  For example, fetching some JSON data to use in a template engine like Handlebars.
 
-[Try It Yourself](http://morganconrad.github.io/serviceworkers/04_templating/index.html)
+[Try It Yourself](http://morganconrad.github.io/serviceworkers/04_templating/www/index.html)
 
 
 
