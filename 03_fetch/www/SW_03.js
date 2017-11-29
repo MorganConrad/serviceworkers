@@ -9,108 +9,108 @@ var someGlobal = " someGlobal" + CACHE_NAME;
 
 
 const INITIAL_CACHE = [
-   "/index.html",
-   "/help.html",   // deliberately leave out more.html
-   "/",
-    "/blog/PlayTheAcceleratedDragon.html",
-   "/users/HouYifan.html"
+  "/index.html",
+  "/help.html",   // deliberately leave out more.html
+  "/",
+  "/blog/PlayTheAcceleratedDragon.html",
+  "/users/HouYifan.html"
 ];
 
 
 
 self.addEventListener('install', function(event) {
-   someGlobal = someGlobal + " install";
-   console.log(MY_NAME + ': install event' + someGlobal);
-   event.waitUntil(caches.open(CACHE_NAME)
-                    .then(function(cache) {
-                        return cache.addAll(INITIAL_CACHE);
-                     })
-                     .catch(err => console.log('install failed: ' + err))
-      );
+  someGlobal = someGlobal + " install";
+  console.log(MY_NAME + ': install event' + someGlobal);
+  event.waitUntil(caches.open(CACHE_NAME)
+    .then(function(cache) {
+      return cache.addAll(INITIAL_CACHE);
+    })
+    .catch(err => console.log('install failed: ' + err))
+);
 });
 
 
-
 self.addEventListener('activate', function(event) {
-   someGlobal = someGlobal + " & activate";
-   console.log(MY_NAME + ': activate event' + someGlobal);
-   event.waitUntil(
-      caches.keys().then(function(cacheNames) {
-         return Promise.all(
-            cacheNames.map(function(cacheName) {
-               if (!cacheName.endsWith(VERSION)) {
-                  return caches.delete(cacheName);
-               }
-            })
-          );
-       })
-   );
+  someGlobal = someGlobal + " & activate";
+  console.log(MY_NAME + ': activate event' + someGlobal);
+  event.waitUntil(
+    caches.keys()
+      .then(function(cacheNames) {
+        return Promise.all(
+          cacheNames.map(function(cacheName) {
+            if (!cacheName.endsWith(VERSION)) {
+              return caches.delete(cacheName);
+            }
+          })
+        );
+      })
+      .catch(function(err) { console.log('activate failed: ' + err));
+  );
 });
 
 
 
 self.addEventListener('fetch', function(event) {
-   if (shouldHandleFetch(event)) {
-      event.respondWith(cacheFirstThenNetwork(event, true));
-      //event.respondWith(networkFirstThenCache(event, true));
-   }
+  if (shouldHandleFetch(event)) {
+    event.respondWith(cacheFirstThenNetwork(event, true));
+    //event.respondWith(networkFirstThenCache(event, true));
+  }
 });
 
 
 
 function cacheFirstThenNetwork(event, andUpdateCache) {
-   return caches.match(event.request)
-      .then (function(response) {
-         if (response) {
-            console.log(MY_NAME + ': fetch event ' + event.request.url + ' from cache');
-            return response;
-         }
+  return caches.match(event.request)
+    .then (function(response) {
+      if (response) {
+        console.log(MY_NAME + ': fetch event ' + event.request.url + ' from cache');
+        return response;
+      }
 
-         var clonedRequest = event.request.clone();
-         console.log(MY_NAME + ': fetch event ' + event.request.url + ' from network');
-         return fetch(clonedRequest).then(
-            function(response) {
-               if (andUpdateCache)
-                  updateCache(clonedRequest, response.clone());
+      var clonedRequest = event.request.clone();
+      console.log(MY_NAME + ': fetch event ' + event.request.url + ' from network');
+      return fetch(clonedRequest)
+        .then(function(response) {
+          if (andUpdateCache)
+            updateCache(clonedRequest, response.clone());
 
-               return response;
-            }
-         );
-      })
+          return response;
+        }
+    );
+})
 }
 
 
 function networkFirstThenCache(event, andUpdateCache) {
-   return fetch(event.request)
-      .then (function(response) {
-         // really should check for 404???
-         console.log(MY_NAME + ': fetch event ' + event.request.url + ' from network');
-         if (andUpdateCache)
-            updateCache(event.request, response.clone());
-         return response;
-      })
-
-   .catch(function () {
+  return fetch(event.request)
+    .then (function(response) {
+      // really should check for 404???
+      console.log(MY_NAME + ': fetch event ' + event.request.url + ' from network');
+      if (andUpdateCache)
+      updateCache(event.request, response.clone());
+      return response;
+    })
+    .catch(function (ignored) {
       var clonedRequest = event.request.clone();
       console.log(MY_NAME + ': fetch event ' + event.request.url + ' from cache');
-      return caches.match(clonedRequest).then(
-         function(response) {
-            return response;
-         }
+      return caches.match(clonedRequest)
+        .then(function(response) {
+          return response;
+        }
       );
-   });
+    });
 }
 
 
 
 function updateCache(request, response) {
-   if (shouldCacheThis(request, response)) {
-      caches.open(CACHE_NAME)
-         .then(function(cache) {
-            console.log(MY_NAME + ': updated cache for ' + request.url);
-            cache.put(request, response);
-         });
-   }
+  if (shouldCacheThis(request, response)) {
+    caches.open(CACHE_NAME)
+      .then(function(cache) {
+        console.log(MY_NAME + ': updated cache for ' + request.url);
+        cache.put(request, response);
+      });
+  }
 }
 
 // this can get messy and varies by your application

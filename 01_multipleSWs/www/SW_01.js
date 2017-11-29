@@ -12,47 +12,49 @@ var someGlobal = " someGlobal" + CACHE_NAME;
 
 
 const INITIAL_CACHE = [
-   "/index.html",
-   "/help.html",   // deliberately leave out more.html
-   "/",
-   "/blog/PlayTheAcceleratedDragon.html",  // these wont matter cause subfolder SWs will handle them
-   "/users/HouYifan.html"
+  "/index.html",
+  "/help.html",   // deliberately leave out more.html
+  "/",
+  "/blog/PlayTheAcceleratedDragon.html",  // these wont matter cause subfolder SWs will handle them
+  "/users/HouYifan.html"
 ];
 
 
 
 self.addEventListener('install', function(event) {
-   someGlobal = someGlobal + " install";
-   console.log(CACHE_NAME + ': install event' + someGlobal);
-   event.waitUntil(caches.open(CACHE_NAME)
-                    .then(function(cache) {
-                        return cache.addAll(INITIAL_CACHE);
-                     })
-                     .catch(err => console.log('install failed: ' + err))
-      );
+  someGlobal = someGlobal + " install";
+  console.log(CACHE_NAME + ': install event' + someGlobal);
+  event.waitUntil(caches.open(CACHE_NAME)
+    .then(function(cache) {
+      return cache.addAll(INITIAL_CACHE);
+    })
+    .catch(err => console.log('install failed: ' + err))
+  );
 });
 
 
 
 self.addEventListener('activate', function(event) {
-   someGlobal = someGlobal + " & activate";
-   console.log(CACHE_NAME + ': activate event' + someGlobal);
-   event.waitUntil(
-      caches.keys().then(function(cacheNames) {
-         return Promise.all(
-            cacheNames.map(function(cacheName) {
-               if (!cacheName.endsWith(VERSION)) {
-                  return caches.delete(cacheName);
-               }
-            })
-          );
-       })
-   );
+  someGlobal = someGlobal + " & activate";
+  console.log(CACHE_NAME + ': activate event' + someGlobal);
+  event.waitUntil(
+    caches.keys()
+      .then(function(cacheNames) {
+        return Promise.all(
+          cacheNames.map(function(cacheName) {
+            if (!cacheName.endsWith(VERSION)) {
+              return caches.delete(cacheName);
+            }
+          })
+        );
+      })
+    .catch((err) => console.log('activate failed: ' + err))
+  );
 });
 
 
 
 self.addEventListener('fetch', function(event) {
-   console.log(MY_NAME + ': fetch event ' + event.request.url);
-   return;  // just return
+  console.log(MY_NAME + ': fetch event ' + event.request.url);
+  return;  // just return
 });

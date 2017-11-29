@@ -15,15 +15,15 @@ Fast, best for content that doesn't change.
  2. Fetch response from network
  3. Add cloned response to cache.  (there are cases where you don't want to cache)
  4. Return response.
- 
+
 **Downsides** Though **new** content will get added in steps 2-4, existing content is never updated.
  If it becomes necessary to update content:
   - Could update the Service Worker and "V" number on cache to delete old content.
   - There is an alternative strategy to check cache first, but then **always** perform steps 2-4 anyway.
-  
+
 ### networkFirstThenCache()
 
-Content will always be "fresh".  Easy to update.
+Safest, as content will always be "fresh".  Easy to update.
 
  1. Fetch response from network.  (option - put on a timeout)
  2. Possibly update the cache so it is fresh.
@@ -31,8 +31,13 @@ Content will always be "fresh".  Easy to update.
 
 **Downsides**  Slower, since always takes a time hit connecting to network.
 
+### Various Hybrids
+ - cache-first for assets, but network-first for html
+   - single listener or multiple?
+ - fetch only small changing parts and render/template client-side (see next exercise)
+
 
 ### See also - things to do in a real situation.
 
  - `shouldCacheThis()` : not all content should be cached
- - `shouldHandleFetch()` : some content should just use the default fetch.
+ - `shouldHandleFetch()` : some content (e.g. offsite) should just use the default fetch.
