@@ -43,7 +43,7 @@ self.addEventListener('activate', function(event) {
           })
         );
       })
-      .catch(function(err) { console.log('activate failed: ' + err));
+      .catch(function(err) { console.log('activate failed: ' + err) } );
   );
 });
 

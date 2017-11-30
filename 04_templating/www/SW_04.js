@@ -75,12 +75,12 @@ function cacheFirstThenNetwork(event, andUpdateCache) {
   return caches.match(event.request)
     .then(function (response) {
       if (response) {
-        debugLog(MY_NAME + ': fetch event ' + event.request.url + ' from cache');
+        debugLog(MY_NAME + ': fetch from cache: ' + event.request.url);
         return response;
       }
 
       var clonedRequest = event.request.clone();
-      debugLog(MY_NAME + ': fetch event ' + event.request.url + ' from network');
+      debugLog(MY_NAME + ': fetch from network:' + event.request.url);
       return fetch(clonedRequest)
         .then(function (response) {
           return (andUpdateCache) ?
