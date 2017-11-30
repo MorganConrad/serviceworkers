@@ -10,7 +10,7 @@ var someGlobal = "";
 /* end of global test area */
 
 
-const INITIAL_CACHE = ['PLayTheAcceleratedDragon.html'];
+const INITIAL_CACHE = ['PlayTheAcceleratedDragon.html'];
 
 
 
