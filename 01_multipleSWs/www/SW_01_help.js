@@ -11,11 +11,10 @@ var someGlobal = " someGlobal" + CACHE_NAME;
 
 
 const INITIAL_CACHE = [
-   "/index.html",
-   "/help.html",   // deliberately leave out more.html
-   "/",
-   "/blog/PlayTheAcceleratedDragon.html",  // these wont matter cause subfolder SWs will handle them
-   "/users/HouYifan.html"
+   "index.html",
+   "help.html",   // deliberately leave out more.html
+   "blog/PlayTheAcceleratedDragon.html",  // these wont matter cause subfolder SWs will handle them
+   "users/HouYifan.html"
 ];
 
 

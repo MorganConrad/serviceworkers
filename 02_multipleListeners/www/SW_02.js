@@ -9,11 +9,10 @@ var someGlobal = "";
 
 
 const INITIAL_CACHE = [
-  "/index.html",
-  "/help.html",
-  "/",
-  "/blog/PlayTheAcceleratedDragon.html",
-  "/users/HouYifan.html"
+  "index.html",
+  "help.html",
+  "blog/PlayTheAcceleratedDragon.html",
+  "users/HouYifan.html"
 ];
 
 
