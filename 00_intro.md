@@ -1,6 +1,6 @@
 
 ## TOC
-  - [Why](#why)
+  - [Why](#why--some-quotes)
   - [Why Not](#why-not)
   - [Gory Details](#gory-details)
   - [Lifecycle](#lifecycle)
