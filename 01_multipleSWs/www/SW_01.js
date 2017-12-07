@@ -27,7 +27,12 @@ self.addEventListener('install', function(event) {
     .then(function(cache) {
       return cache.addAll(INITIAL_CACHE);
     })
-    .catch(err => console.log('install failed: ' + err))
+    /*
+      Failure is not only an option, it is the best option
+      Don't install a faulty ServiceWorker
+
+    .catch(function(err) { console.log('install failed: ' + err)} )
+    */
   );
 });
 
@@ -47,7 +52,7 @@ self.addEventListener('activate', function(event) {
           })
         );
       })
-    .catch((err) => console.log('activate failed: ' + err))
+    // .catch((err) => console.log('activate failed: ' + err))
   );
 });
 

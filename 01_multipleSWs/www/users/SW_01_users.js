@@ -16,16 +16,19 @@ const INITIAL_CACHE = ['HouYifan.html', 'MagnusCarlsen.html'];
 
 self.addEventListener('install', function(event) {
   someGlobal = someGlobal + " install";
-  console.log(MY_NAME + ': install event' + someGlobal);
-  event.waitUntil(
-    caches.open(CACHE_NAME)
-      .then(function(cache) {
-        return cache.addAll(INITIAL_CACHE);
-      })
-      .catch(err => console.log('install failed: ' + err))
+  console.log(CACHE_NAME + ': install event' + someGlobal);
+  event.waitUntil(caches.open(CACHE_NAME)
+    .then(function(cache) {
+      return cache.addAll(INITIAL_CACHE);
+    })
+    /*
+      Failure is not only an option, it is the best option
+      Don't install a faulty ServiceWorker
+
+    .catch(function(err) { console.log('install failed: ' + err)} )
+    */
   );
 });
-
 
 self.addEventListener('activate', function(event) {
   someGlobal = someGlobal + " & activate";
@@ -41,7 +44,7 @@ self.addEventListener('activate', function(event) {
         })
       );
     })
-    .catch((err) => console.log('activate failed: ' + err))
+    // .catch((err) => console.log('activate failed: ' + err))
   );
 });
 

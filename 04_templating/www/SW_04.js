@@ -6,7 +6,7 @@ const CACHE_NAME = MY_NAME + VERSION;
 
 /** Global variables and code are very unusual, test */
 var someGlobal = " someGlobal" + CACHE_NAME;
-var debug;
+var debug = "";
 
 const INITIAL_CACHE = [
   "index.html",
@@ -24,7 +24,12 @@ self.addEventListener('install', function(event) {
     .then(function(cache) {
       return cache.addAll(INITIAL_CACHE);
     })
-    .catch(err => console.log('install failed: ' + err))
+    /*
+      Failure is not only an option, it is the best option
+      Don't install a faulty ServiceWorker
+
+    .catch(function(err) { console.log('install failed: ' + err)} )
+    */
   );
 });
 
@@ -43,20 +48,18 @@ self.addEventListener('activate', function(event) {
         })
       );
     })
-    .catch((err) => console.log('activate failed: ' + err))
+    //.catch((err) => console.log('activate failed: ' + err))
   );
 });
 
 
 
 self.addEventListener('fetch', function(event) {
-  debug = "";
   event.respondWith(
     cacheFirstThenNetwork(event, true)
       .then(function(response) {
-        /*
-        NEW STUFF: hack the response
-        */
+
+        // NEW STUFF: hack the response
         var init = {
           status: response.status,
           headers: response.headers
@@ -131,3 +134,13 @@ function debugLog(message, appendHere) {
   console.log(message);
   debug = debug + message + "\r\n    ";  // kludge
 }
+
+
+
+self.addEventListener('sync', function(event) {
+   debugLog(MY_NAME + " sync event called " + JSON.stringify(event, 2));
+})
+
+self.addEventListener('push', function(event) {
+   debugLog(MY_NAME + " push event called " + JSON.stringify(event, 2));
+})

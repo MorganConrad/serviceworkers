@@ -19,11 +19,21 @@ const INITIAL_CACHE = [
 self.addEventListener('install', function(event) {
   someGlobal = someGlobal + " install";
   console.log(MY_NAME + ': install event' + someGlobal);
+
+  // example "cache buster"
+  let cacheBuster = "?cacheBuster=" + new Date().getTime();
+  let updatedURLs = INITIAL_CACHE.map((url) => {return url+cacheBuster} );
+
   event.waitUntil(caches.open(CACHE_NAME)
     .then(function(cache) {
-      return cache.addAll(INITIAL_CACHE);
+      return cache.addAll(updatedURLs);
     })
+    /*
+      Failure is not only an option, it is the best option
+      Don't install a faulty ServiceWorker
+
     .catch(function(err) { console.log('install failed: ' + err)} )
+    */
   );
 });
 
@@ -42,7 +52,7 @@ self.addEventListener('activate', function(event) {
         })
       );
     })
-    .catch((err) => console.log('activate failed: ' + err))
+    // .catch((err) => console.log('activate failed: ' + err))
   );
 });
 
@@ -51,7 +61,7 @@ self.addEventListener('activate', function(event) {
 // try moving this after the real one
 self.addEventListener('fetch', function doNothing(event) {
   console.log(MY_NAME + ': doNothing() fetch listener called for ' + event.request.url);
-  return;  // we aren't handling it
+  return;  // we aren't handling it, no call to event.respondWith()
 });
 
 

@@ -34,10 +34,21 @@ Safest, as content will always be "fresh".  Easy to update.
 ### Various Hybrids
  - cache-first for assets, but network-first for html
    - single listener or multiple?
+   - single SW or per folder?
  - fetch only small changing parts and render/template client-side (see next exercise)
 
+### Not all content should be cached: `shouldCacheThis()`
+ - GET only
+ - response.ok  (code in the 200s)
+ - Not all content types
+  - response.headers.get('Content-Type') === 'whatever')
+  - response.url.endsWith('.html')
+ - generally, only your own pages.
+    - response.type === 'basic'
+    - location.origin === response.url.origin
 
-### See also - things to do in a real situation.
-
- - `shouldCacheThis()` : not all content should be cached
- - `shouldHandleFetch()` : some content (e.g. offsite) should just use the default fetch.
+### Not all fetches should be intercepted: `shouldHandleFetch()`
+  - GET only
+  - content types?
+  - generally, only your own pages
+  - perhaps a subset, test with RegExp etc.  (or add multiple listeners?)

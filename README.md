@@ -26,9 +26,12 @@ This shows how you can setup separate service workers per folder.  It installs o
 
 In the console, you will see the workers get registered, then log messages when they get called for a fetch.
 
-Because two different workers try to control the root directory, they swap back and forth.  This is probably a bug in real code.
+Different Service Workers _per folder_ is a reasonable idea: Blog vs. images. vs CSS, or security
 
-In all the other exercises, only a single service worker gets registered, at the root level.
+Because two different workers (SW_01.js and SW_01_help.js) try to control the root directory, they swap back and forth.  
+ - This is probably a bug in real code.
+ - In the Developer Console, note how they are waiting on each other...
+ - In all the other exercises, only a single service worker gets registered, at the root level.
 
 [Try It Yourself](http://morganconrad.github.io/serviceworkers/01_multipleSWs/www/index.html)
 
@@ -40,6 +43,8 @@ One listener, named `doNothing()`, just logs.  Since it doesn't call `event.resp
 The second listener, `realHandler()`, responds by calling the normal fetch method, ending the listener chain.
 
 Try swapping the order, putting `realHandler` first, and see if `doNothing` still gets called.
+
+In a "real" example, one listener might handle HTML, another CSS, etc...
 
 [Try It Yourself](http://morganconrad.github.io/serviceworkers/02_multipleListeners/www/index.html)
 
@@ -68,4 +73,3 @@ Illustrates how you could modify the response.  For example, fetching some JSON 
  - Use user's location to switch to a geographically closer server.
  - Load Balancing
  - Analytics
- 
