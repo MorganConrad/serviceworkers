@@ -32,3 +32,12 @@ If you edit so that only `doNothing()` is added, the event falls through to the 
 
   If you dislike all the typing, plus the necessity/flakiness to constantly updating this list, another strategy is to
   GET the list from the server (say, in JSON format), then create the initial array from that.
+
+### Major Icky Gotcha
+
+Astute observers may notice that the subfolder serviceworkers (SW_01)users.js and SW_01_blog.js) are **still installed**.
+This is a big weakness of ServiceWorkers - getting rid of outdated / "zombie" ServiceWorkers.
+
+ - For us techie guys, use Developer Tools and unregister, or just blow away all the cache (Application -> Clear storage).
+ - For programmatic deletion, can use `navigator.serviceworker.getRegistrations() ... unregister()`.
+ 

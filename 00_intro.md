@@ -1,4 +1,16 @@
 
+## TOC
+  - [Why](#why)
+  - [Why Not](#why-not)
+  - [Gory Details](#gory-details)
+  - [Lifecycle](#lifecycle)
+    - [install](#install)
+    - [activate](#activate)
+    - [fetch](#fetch)
+  - [`fetch()` notes](#you-will-use-fetch-a-lot--gotchas)
+  - [References](#references)
+
+
 ## Why?  (some quotes)
 
  > Service Worker is a part of [Progressive Web Apps](https://developers.google.com/web/progressive-web-apps/)– ...means for
@@ -14,19 +26,23 @@
 
 #### Benefits
  - Make the website function while offline
- - Speed performance even when online by reducing network requests
+ - Faster performance even when online, by reducing network requests
  - Customize offline experience
- - Google Lighthouse likes you.
+ - Google Lighthouse likes you
+
+ [>](#why-not)
 
 ## Why Not?
  - Browser support is inconsistent, see [Is Serviceworker Ready?](https://jakearchibald.github.io/isserviceworkerready/)
-   - Chrome and Firefox have best support including debugging (with some stale log issues)
+   - Chrome and Firefox have best support including debugging (with some issues)
    - Opera supports debugging in experimental developer mode
    - Safari and Edge are "in development" (Edge 16+)
  - Unit Testing tools still bleeding edge: [npm sw-test-env](https://www.npmjs.com/package/sw-test-env)
  - Some limited development libraries on GitHub, Google...
- - Soma APIs, like Sync, are poorly supported.
+ - Some APIs, like Sync, are poorly supported.
  - You can mess up and create [Zombie Service Workers](https://www.youtube.com/watch?v=CPP9ew4Co0M)
+
+[>](#gory-details)
 
 ### Other parts of a "Progressive Web App"
  - https
@@ -39,13 +55,13 @@ Use [Lighthouse](https://developers.google.com/web/tools/lighthouse/) to test mo
 
 ## Gory Details
  - **Must use https**, or, for testing, localhost
- - Uses "self" instead of "this".  Not sure why???
- - Service Workers run in a different thread and context from their pages, ["ServiceWorkerGlobalScope"](https://developer.mozilla.org/en-US/docs/Web/API/ServiceWorkerGlobalScope), and must _not block_ => asynchronously (Promises).  They _cannot access_
+ - Uses "**self**" instead of "**this**".
+ - Service Workers run in a different thread and context from their pages, ["ServiceWorkerGlobalScope"](https://developer.mozilla.org/en-US/docs/Web/API/ServiceWorkerGlobalScope), and must run asynchronously (Promises).  They _cannot access_
     - DOM elements (you could access the raw body and parse it)
     - JavaScript variables in the main thread
     - localStorage   
  - Service Workers _can_ access
-    - [indexedDB](https://developer.mozilla.org/en-US/docs/Web/API/WindowOrWorkerGlobalScope/indexedDB)
+    - [indexedDB](https://developer.mozilla.org/en-US/docs/Web/API/WindowOrWorkerGlobalScope/indexedDB) (note - complex API, consider wrapper libraries)
     - [location](https://developer.mozilla.org/en-US/docs/Web/API/WorkerGlobalScope/location)
     - [navigator](https://developer.mozilla.org/en-US/docs/Web/API/WorkerNavigator)
     - [caches](https://developer.mozilla.org/en-US/docs/Web/API/CacheStorage) sandboxed to your origin.
@@ -57,6 +73,7 @@ Use [Lighthouse](https://developers.google.com/web/tools/lighthouse/) to test mo
     - only one active Service Worker per folder
     - but may have separate ones for subfolders.  see 01_multipleSWs
 
+[>](#lifecycle)
 
 ## Lifecycle
 
@@ -75,36 +92,50 @@ Normally, the new SW will enter a "waiting" state, until the previous SW is idle
  - Split into "critical" and "nice to haves"?  (in separate caches?)
  - Periodically clean out old or lesser used cache - send a message?
  - Periodically "phone home" to look for updates or kill switches?
- - In theory you can use async await instead of Promises but these seem to be many gotchas right now.
+ - In theory you can use `async await` instead of Promises but these seem to be many gotchas right now.
  - Smartly "recycle" assets between caches when upgrading???
- - postMessage API is "weird", consider a library like Swivel
- - beware renaming the SW file since the _index.html may be cached._  Set short cache-control headers for it.
+ - consider a library like Swivel to simplify postMessage API
+ - beware renaming the SW file, since the _index.html may be cached._  Set short cache-control headers for it.
  - Put explicit timestamp or version number in SW to ensure reinstall.
 
+[>](#activate)
 
 ### activate
 Fired when first activated, _or if getting reactivated after "swapping out" from not in use_.
  - Typically you delete any of your caches no longer needed.  
  - You cannot rely on global state to persist across activations, use indexedDB (painful).
+ - Maybe unregister other ServiceWorkers?  ("zombies", see below)
 
-**Note** To force the new ServiceWorker to take effect immediately, your install handler should call [`self.skipWaiting()`](https://developer.mozilla.org/en-US/docs/Web/API/ServiceWorkerGlobalScope/skipWaiting) and your activate handler should call [`clients.claim()`](https://developer.mozilla.org/en-US/docs/Web/API/Clients/claim).  Usually a bad idea.
+**Note** To force the new ServiceWorker to take effect immediately, your install handler should call [`self.skipWaiting()`](https://developer.mozilla.org/en-US/docs/Web/API/ServiceWorkerGlobalScope/skipWaiting) and your activate handler should call [`clients.claim()`](https://developer.mozilla.org/en-US/docs/Web/API/Clients/claim).  Often a bad idea.
+
+[>](#fetch)
 
 ### fetch
-Fired when website tries to fetch a resource.  Default is to use `fetch()`.  This is where a lot of your magic happens, see examples...
+Fired when website tries to fetch a resource.  Default is to use [`fetch()`](#you-will-use-fetch-a-lot--gotchas)
 
 ### message
-Used for messaging.  
+Used for messaging.
+ - TODO, need a good example
  - It's not clear if you can send messages to your web pages and let them manipulate DOM.
 
+### push
+ - TODO, need a good example
+ - Annoying
+
+### sync
+ - TODO, need a good example
+
+[>](#you-will-use-fetch-a-lot--gotchas)
 
 ## You will use fetch() a lot.  Gotchas:
-
  - by default, it provides no credentials such as cookies.
  - CORS is an issue (I don't fully understand)
  - the [response](https://developer.mozilla.org/en-US/docs/Web/API/Response) might have a status !== 200, check response.ok!
  - checking the details and headers of the [Request is possible if tedious](https://developer.mozilla.org/en-US/docs/Web/API/Request).
  - [setting the cache mode](https://developer.mozilla.org/en-US/docs/Web/API/WindowOrWorkerGlobalScope/fetch) to avoid browser caching isn't implemented yet on Chrome.
  - you can add multiple fetch listeners, for example, to handle different MIME types.
+
+[>](#references)
 
 ## References
 
