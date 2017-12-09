@@ -25,10 +25,10 @@
  > your server went down.
 
 #### Benefits
- - Make the website function while offline
+ - **Make the website function while offline**
  - Faster performance even when online, by reducing network requests
  - Customize offline experience
- - Google Lighthouse likes you
+ - Lighthouse (and other site performance tools) like you
 
  [>](#why-not)
 
@@ -56,7 +56,9 @@ Use [Lighthouse](https://developers.google.com/web/tools/lighthouse/) to test mo
 ## Gory Details
  - **Must use https**, or, for testing, localhost
  - Uses "**self**" instead of "**this**".
- - Service Workers run in a different thread and context from their pages, ["ServiceWorkerGlobalScope"](https://developer.mozilla.org/en-US/docs/Web/API/ServiceWorkerGlobalScope), and must run asynchronously (Promises).  They _cannot access_
+ - Must run asynchronously (Promises).
+ - Service Workers run in a different thread and context from their pages, ["ServiceWorkerGlobalScope"](https://developer.mozilla.org/en-US/docs/Web/API/ServiceWorkerGlobalScope)
+ - Therefore, Service Workers _cannot access_
     - DOM elements (you could access the raw body and parse it)
     - JavaScript variables in the main thread
     - localStorage   
@@ -78,24 +80,25 @@ Use [Lighthouse](https://developers.google.com/web/tools/lighthouse/) to test mo
 ## Lifecycle
 
 ### install
-Fired once when a ServiceWorker is first fetched, or browser detects a change in the code.
-(or Developer Tools > Application > Service Workers, check "Update on reload")
-Since you know you are online here, install usually downloads and caches vital files.
-Normally, the new SW will enter a "waiting" state, until the previous SW is idle (all it's clients/pages are closed).
+ - Fired once when a ServiceWorker is first fetched, or browser detects a change in the code.
+ - (or Developer Tools > Application > Service Workers, check "Update on reload")
+ - Since you know you are online, install usually downloads and caches vital files.
+ - New SW will enter a "waiting" state, until the previous SW is idle (all it's clients/pages are closed).
 
 #### Gotchas / Ideas
- - May want a "cache-buster" dummy query to avoid browser cacheing.  (see SW_02.js)
+ - **Set short cache-control headers for your service worker file!**.
  - install SW during some idle time... onLoad()?
- - instead of hardcoding filenames to install, GET a json file?  [Example Code](https://serviceworke.rs/json-cache.html)
+ - instead of hard coding filenames to install, GET a json file?  [Example Code](https://serviceworke.rs/json-cache.html)
+ - May want a "cache-buster" dummy query to avoid browser caching.  (see SW_02.js)
  - It's safe/required to use Promises and ES6 in the ServiceWorker.  Don't use them for the registerSW.js code.
  - Always(?) install a nice "/offline.html" page.
  - Split into "critical" and "nice to haves"?  (in separate caches?)
  - Periodically clean out old or lesser used cache - send a message?
  - Periodically "phone home" to look for updates or kill switches?
- - In theory you can use `async await` instead of Promises but these seem to be many gotchas right now.
+ - In theory you can use `async await` instead of Promises but many gotchas right now.
  - Smartly "recycle" assets between caches when upgrading???
  - consider a library like Swivel to simplify postMessage API
- - beware renaming the SW file, since the _index.html may be cached._  Set short cache-control headers for it.
+ - beware renaming the SW file, since the _index.html may be cached._  
  - Put explicit timestamp or version number in SW to ensure reinstall.
 
 [>](#activate)
@@ -106,7 +109,7 @@ Fired when first activated, _or if getting reactivated after "swapping out" from
  - You cannot rely on global state to persist across activations, use indexedDB (painful).
  - Maybe unregister other ServiceWorkers?  ("zombies", see below)
 
-**Note** To force the new ServiceWorker to take effect immediately, your install handler should call [`self.skipWaiting()`](https://developer.mozilla.org/en-US/docs/Web/API/ServiceWorkerGlobalScope/skipWaiting) and your activate handler should call [`clients.claim()`](https://developer.mozilla.org/en-US/docs/Web/API/Clients/claim).  Often a bad idea.
+**Note** To force the new ServiceWorker to take effect immediately, call [`self.skipWaiting()`](https://developer.mozilla.org/en-US/docs/Web/API/ServiceWorkerGlobalScope/skipWaiting) and your activate handler should call [`clients.claim()`](https://developer.mozilla.org/en-US/docs/Web/API/Clients/claim).  Often a bad idea.
 
 [>](#fetch)
 
@@ -130,7 +133,7 @@ Used for messaging.
 ## You will use fetch() a lot.  Gotchas:
  - by default, it provides no credentials such as cookies.
  - CORS is an issue (I don't fully understand)
- - the [response](https://developer.mozilla.org/en-US/docs/Web/API/Response) might have a status !== 200, check response.ok!
+ - the [response](https://developer.mozilla.org/en-US/docs/Web/API/Response) might have a status !== 200, check `response.ok`
  - checking the details and headers of the [Request is possible if tedious](https://developer.mozilla.org/en-US/docs/Web/API/Request).
  - [setting the cache mode](https://developer.mozilla.org/en-US/docs/Web/API/WindowOrWorkerGlobalScope/fetch) to avoid browser caching isn't implemented yet on Chrome.
  - you can add multiple fetch listeners, for example, to handle different MIME types.

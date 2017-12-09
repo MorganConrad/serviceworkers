@@ -5,7 +5,10 @@ This is intended as a vaguely realistic Service Worker
 
 See SW_03.js
 
-There are many many fetching strategies.  Here we provide examples of
+There are many fetching strategies, see below for a few.  
+
+This example is setup for cacheFirst, but, for illustration purposes,
+more.html and MagnusCarlsen are _not pre-cached_, so they will always require one network access.
 
 ### cacheFirstThenNetwork()
 

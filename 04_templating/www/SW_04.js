@@ -55,8 +55,9 @@ self.addEventListener('activate', function(event) {
 
 
 self.addEventListener('fetch', function(event) {
+  debug = "";
   event.respondWith(
-    cacheFirstThenNetwork(event, true)
+    networkFirstThenCache(event, true)
       .then(function(response) {
 
         // NEW STUFF: hack the response
@@ -99,14 +100,14 @@ function networkFirstThenCache(event, andUpdateCache) {
   return fetch(event.request)
     .then (function(response) {
       if (response)
-      debugLog(MY_NAME + ': fetch event ' + event.request.url + ' from network');
+        debugLog(MY_NAME + ': fetch from network: ' + event.request.url + ' ' + response.status);
       return (andUpdateCache) ?
         updateCache(event.request, response) :
         response;
     })
     .catch(function () {
       var clonedRequest = event.request.clone();
-      debugLog(MY_NAME + ': fetch event ' + event.request.url + ' from cache');
+      debugLog(MY_NAME + ': fetch from cache: ' + event.request.url);
       return caches.match(clonedRequest)
         .then(function(response) {
           return response;
