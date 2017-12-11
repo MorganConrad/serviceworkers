@@ -16,7 +16,6 @@ const INITIAL_CACHE = [
 ];
 
 
-
 self.addEventListener('install', function(event) {
   someGlobal = someGlobal + " install";
   console.log(MY_NAME + ': install event' + someGlobal);
@@ -55,7 +54,6 @@ self.addEventListener('activate', function(event) {
 
 
 self.addEventListener('fetch', function(event) {
-  debug = "";
   event.respondWith(
     networkFirstThenCache(event, true)
       .then(function(response) {
@@ -68,6 +66,7 @@ self.addEventListener('fetch', function(event) {
         return response.text()
           .then(function(text) {
             var hacked = text.replace("{{debug}}", debug);
+            debug = "";  // clear for further messages
             return new Response(hacked, init);
           })
       })

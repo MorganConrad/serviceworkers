@@ -55,3 +55,8 @@ Safest, as content will always be "fresh".  Easy to update.
   - content types?
   - generally, only your own pages
   - perhaps a subset, test with RegExp etc.  (or add multiple listeners?)
+
+### Run it
+ - Start your own Apache or Nginx on the WWW folder
+ - Launch serve or serve.bat (if you have [http-server](https://www.npmjs.com/package/http-server) installed)
+ - [Open on GitHub Pages](https://morganconrad.github.io/serviceworkers/03_fetch/www/index.html)

@@ -40,4 +40,9 @@ This is a big weakness of ServiceWorkers - getting rid of outdated / "zombie" Se
 
  - For us techie guys, use Developer Tools and unregister, or just blow away all the cache (Application -> Clear storage).
  - For programmatic deletion, can use `navigator.serviceworker.getRegistrations() ... unregister()`.
- 
+
+
+### Run it
+ - Start your own Apache or Nginx on the WWW folder
+ - Launch serve or serve.bat (if you have [http-server](https://www.npmjs.com/package/http-server) installed)
+ - [Open on GitHub Pages](https://morganconrad.github.io/serviceworkers/02_multipleListeners/www/index.html)

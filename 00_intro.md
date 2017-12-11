@@ -87,19 +87,20 @@ Use [Lighthouse](https://developers.google.com/web/tools/lighthouse/) to test mo
 
 #### Gotchas / Ideas
  - **Set short cache-control headers for your service worker file!**.
- - install SW during some idle time... onLoad()?
- - instead of hard coding filenames to install, GET a json file?  [Example Code](https://serviceworke.rs/json-cache.html)
+ - Install SW during some idle time... onLoad()?
+ - Put explicit timestamp or version number in SW to ensure reinstall.
  - May want a "cache-buster" dummy query to avoid browser caching.  (see SW_02.js)
  - It's safe/required to use Promises and ES6 in the ServiceWorker.  Don't use them for the registerSW.js code.
  - Always(?) install a nice "/offline.html" page.
+ - Instead of hard coding filenames to install, GET a json file?  [Example Code](https://serviceworke.rs/json-cache.html)
  - Split into "critical" and "nice to haves"?  (in separate caches?)
  - Periodically clean out old or lesser used cache - send a message?
  - Periodically "phone home" to look for updates or kill switches?
  - In theory you can use `async await` instead of Promises but many gotchas right now.
  - Smartly "recycle" assets between caches when upgrading???
  - consider a library like Swivel to simplify postMessage API
- - beware renaming the SW file, since the _index.html may be cached._  
- - Put explicit timestamp or version number in SW to ensure reinstall.
+ - Beware renaming the SW file, since the _index.html may be cached._  
+
 
 [>](#activate)
 
