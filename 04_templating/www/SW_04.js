@@ -6,7 +6,7 @@ const CACHE_NAME = MY_NAME + VERSION;
 
 /** Global variables and code are very unusual, test */
 var someGlobal = " someGlobal" + CACHE_NAME;
-var debug;
+var debug = "";
 
 const INITIAL_CACHE = [
   "index.html",
@@ -16,7 +16,6 @@ const INITIAL_CACHE = [
 ];
 
 
-
 self.addEventListener('install', function(event) {
   someGlobal = someGlobal + " install";
   console.log(MY_NAME + ': install event' + someGlobal);
@@ -24,7 +23,12 @@ self.addEventListener('install', function(event) {
     .then(function(cache) {
       return cache.addAll(INITIAL_CACHE);
     })
-    .catch(err => console.log('install failed: ' + err))
+    /*
+      Failure is not only an option, it is the best option
+      Don't install a faulty ServiceWorker
+
+    .catch(function(err) { console.log('install failed: ' + err)} )
+    */
   );
 });
 
@@ -43,20 +47,18 @@ self.addEventListener('activate', function(event) {
         })
       );
     })
-    .catch((err) => console.log('activate failed: ' + err))
+    //.catch((err) => console.log('activate failed: ' + err))
   );
 });
 
 
 
 self.addEventListener('fetch', function(event) {
-  debug = "";
   event.respondWith(
-    cacheFirstThenNetwork(event, true)
+    networkFirstThenCache(event, true)
       .then(function(response) {
-        /*
-        NEW STUFF: hack the response
-        */
+
+        // NEW STUFF: hack the response
         var init = {
           status: response.status,
           headers: response.headers
@@ -64,6 +66,7 @@ self.addEventListener('fetch', function(event) {
         return response.text()
           .then(function(text) {
             var hacked = text.replace("{{debug}}", debug);
+            debug = "";  // clear for further messages
             return new Response(hacked, init);
           })
       })
@@ -96,14 +99,14 @@ function networkFirstThenCache(event, andUpdateCache) {
   return fetch(event.request)
     .then (function(response) {
       if (response)
-      debugLog(MY_NAME + ': fetch event ' + event.request.url + ' from network');
+        debugLog(MY_NAME + ': fetch from network: ' + event.request.url + ' ' + response.status);
       return (andUpdateCache) ?
         updateCache(event.request, response) :
         response;
     })
     .catch(function () {
       var clonedRequest = event.request.clone();
-      debugLog(MY_NAME + ': fetch event ' + event.request.url + ' from cache');
+      debugLog(MY_NAME + ': fetch from cache: ' + event.request.url);
       return caches.match(clonedRequest)
         .then(function(response) {
           return response;
@@ -131,3 +134,13 @@ function debugLog(message, appendHere) {
   console.log(message);
   debug = debug + message + "\r\n    ";  // kludge
 }
+
+
+
+self.addEventListener('sync', function(event) {
+   debugLog(MY_NAME + " sync event called " + JSON.stringify(event, 2));
+})
+
+self.addEventListener('push', function(event) {
+   debugLog(MY_NAME + " push event called " + JSON.stringify(event, 2));
+})

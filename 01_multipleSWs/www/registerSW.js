@@ -3,7 +3,8 @@ function registerServiceWorker(path, noisy) {
       navigator.serviceWorker.register(path).then(function(registration) {
         if (noisy)
            console.log('ServiceWorker ' + path + ' registered with scope: ', registration.scope);
-      }).catch(function(err) {
+      })
+      .catch(function(err) {
          console.log('ServiceWorker ' + path + ' registration failed: ' + err);
       });
    };

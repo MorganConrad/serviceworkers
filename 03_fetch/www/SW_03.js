@@ -24,7 +24,12 @@ self.addEventListener('install', function(event) {
     .then(function(cache) {
       return cache.addAll(INITIAL_CACHE);
     })
-    .catch(err => console.log('install failed: ' + err))
+    /*
+      Failure is not only an option, it is the best option
+      Don't install a faulty ServiceWorker
+
+    .catch(function(err) { console.log('install failed: ' + err)} )
+    */
 );
 });
 
@@ -43,7 +48,7 @@ self.addEventListener('activate', function(event) {
           })
         );
       })
-      .catch(function(err) { console.log('activate failed: ' + err) } );
+    //  .catch(function(err) { console.log('activate failed: ' + err) } );
   );
 });
 
@@ -83,10 +88,10 @@ function cacheFirstThenNetwork(event, andUpdateCache) {
 function networkFirstThenCache(event, andUpdateCache) {
   return fetch(event.request)
     .then (function(response) {
-      // really should check for 404???
+      // TODO: really should check for response.ok
       console.log(MY_NAME + ': fetch event ' + event.request.url + ' from network');
       if (andUpdateCache)
-      updateCache(event.request, response.clone());
+        updateCache(event.request, response.clone());
       return response;
     })
     .catch(function (ignored) {
@@ -96,6 +101,7 @@ function networkFirstThenCache(event, andUpdateCache) {
         .then(function(response) {
           return response;
         }
+        // TODO: present a nice "You are offline" page here
       );
     });
 }
@@ -120,7 +126,7 @@ function shouldCacheThis(request, response) {
 
   /* other types of things you might want to check
   (response.headers.get('Content-Type') === 'whatever')
-  response.url.endsWith('.html)
+  response.url.endsWith('.html')
   !response.redirected;
   location.origin === response.url.origin   // another way to check cross site stuff...
   */
